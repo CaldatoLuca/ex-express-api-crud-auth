@@ -1,9 +1,14 @@
 const CustomError = require("../exceptions/customError");
 const ValidationError = require("../exceptions/validationError");
+const AuthError = require("../exceptions/authError");
 
 module.exports = (err, req, res, next) => {
   // controllo se è un mio errore custom
-  if (err instanceof CustomError || err instanceof ValidationError) {
+  if (
+    err instanceof CustomError ||
+    err instanceof ValidationError ||
+    err instanceof AuthError
+  ) {
     res.status(err.statusCode).json({
       status: err.name,
       statusCode: err.statusCode,

@@ -1,8 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const auth = require("../utils/auth");
-const CustomError = require("../exceptions/customError");
-const { hashPassword } = require("../utils/hashPassword");
+const AuthError = require("../exceptions/authError");
+const { hashPassword, comparePassword } = require("../utils/password");
 
 const register = async (req, res, next) => {
   const { email, password, name } = req.body;
@@ -23,10 +23,41 @@ const register = async (req, res, next) => {
       token,
     });
   } catch (e) {
-    return next(new CustomError(e.message, 500));
+    return next(new AuthError(e.message, 500));
+  }
+};
+
+const login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({ where: { email: email } });
+    if (!user) {
+      return next(new AuthError("User not found", 404));
+    }
+
+    console.log(password);
+    console.log(user.password);
+
+    const isPswValid = await comparePassword(password, user.password);
+    console.log(isPswValid);
+    if (!isPswValid) {
+      return next(new AuthError("Wrong password", 401));
+    }
+
+    const token = auth.generateToken(user);
+
+    res.status(200).json({
+      message: "User logged in successfully",
+      user,
+      token,
+    });
+  } catch (e) {
+    return next(new AuthError(e.message, 500));
   }
 };
 
 module.exports = {
   register,
+  login,
 };

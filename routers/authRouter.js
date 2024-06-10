@@ -9,6 +9,6 @@ router.post(
   validator(authValidation.register),
   authController.register
 );
-// router.get("/login", authController.index);
+router.post("/login", validator(authValidation.login), authController.login);
 
 module.exports = router;
