@@ -5,6 +5,7 @@ const validator = require("../middlewares/validator");
 const { bodyValidations } = require("../validations/postValidation");
 const { slugValidation } = require("../validations/postSlugValidation");
 const authenticateJWT = require("../middlewares/authenticateJwt");
+const postOwnership = require("../middlewares/postOwnership");
 
 router.post(
   "/",
@@ -16,8 +17,14 @@ router.get("/", postController.index);
 router.use("/:slug", validator(slugValidation));
 
 router.get("/:slug", postController.show);
+
 router.use(authenticateJWT);
-router.put("/:slug", validator(bodyValidations), postController.update);
-router.delete("/:slug", postController.destroy);
+
+router.put(
+  "/:slug",
+  [validator(bodyValidations), postOwnership],
+  postController.update
+);
+router.delete("/:slug", postOwnership, postController.destroy);
 
 module.exports = router;
