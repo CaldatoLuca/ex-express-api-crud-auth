@@ -99,7 +99,7 @@ const bodyValidations = {
           where: { id: { in: ids } },
         });
         if (tags.length !== ids.length) {
-          throw new ValidationError(`Some ingredients were not found`, 404);
+          throw new ValidationError(`Some tags were not found`, 404);
         }
         return true;
       },
