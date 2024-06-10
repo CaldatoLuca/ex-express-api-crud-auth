@@ -6,6 +6,8 @@ const uniqueSlug = require("../utils/uniqueSlug");
 const store = async (req, res, next) => {
   const { title, content, image, published, categoryId, tags } = req.body;
 
+  const user = req.user;
+
   const slug = await uniqueSlug(title);
 
   const data = {
@@ -19,6 +21,9 @@ const store = async (req, res, next) => {
     },
     tags: {
       connect: tags.map((t) => ({ id: t })),
+    },
+    user: {
+      connect: { id: user.id },
     },
   };
 
@@ -43,6 +48,7 @@ const show = async (req, res, next) => {
       include: {
         category: { select: { name: true } },
         tags: { select: { name: true } },
+        user: { select: { name: true } },
       },
     });
 
@@ -93,6 +99,7 @@ const index = async (req, res, next) => {
       include: {
         category: { select: { name: true } },
         tags: { select: { name: true } },
+        user: { select: { name: true } },
       },
       take: parseInt(limit),
       skip: parseInt(offset),
@@ -113,6 +120,8 @@ const update = async (req, res, next) => {
   const { slug } = req.params;
   const { title, content, image, published, categoryId, tags } = req.body;
 
+  const user = req.user;
+
   const newSlug = await uniqueSlug(title);
 
   const data = {
@@ -126,6 +135,9 @@ const update = async (req, res, next) => {
     },
     tags: {
       connect: tags.map((t) => ({ id: t })),
+    },
+    user: {
+      connect: { id: user.id },
     },
   };
 
