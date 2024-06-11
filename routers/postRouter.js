@@ -37,7 +37,7 @@ router.use(authenticateJWT);
 
 router.put(
   "/:slug",
-  [validator(bodyValidations), postOwnership],
+  [upload.single("image"), validator(bodyValidations), postOwnership],
   postController.update
 );
 router.delete("/:slug", postOwnership, postController.destroy);

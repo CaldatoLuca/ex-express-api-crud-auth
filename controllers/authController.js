@@ -36,11 +36,8 @@ const login = async (req, res, next) => {
       return next(new AuthError("User not found", 404));
     }
 
-    console.log(password);
-    console.log(user.password);
-
     const isPswValid = await comparePassword(password, user.password);
-    console.log(isPswValid);
+
     if (!isPswValid) {
       return next(new AuthError("Wrong password", 401));
     }

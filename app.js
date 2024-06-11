@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 const cors = require("cors");
 const morgan = require("morgan");
 const notFound = require("./middlewares/notFound");
@@ -16,7 +17,7 @@ const port = PORT || 3000;
 app.use(cors("*"));
 
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(morgan("dev"));
 
 app.get("/", (req, res) => {

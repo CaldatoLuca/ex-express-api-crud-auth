@@ -18,7 +18,7 @@ const store = async (req, res, next) => {
     title,
     slug,
     content,
-    image: req.file.filename,
+    image: `http://localhost:3000/img/posts/${req.file.filename}`,
     published,
     category: {
       connect: { id: +categoryId },
@@ -123,7 +123,10 @@ const index = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   const { slug } = req.params;
-  const { title, content, published, categoryId, tags } = req.body;
+  let { title, content, published, categoryId, tags } = req.body;
+
+  if (published === "true") published = true;
+  if (published === "false") published = false;
 
   const user = req.user;
 
@@ -138,13 +141,13 @@ const update = async (req, res, next) => {
     title,
     slug: newSlug,
     content,
-    image: req.file.filename,
+    image: `http://localhost:3000/img/posts/${req.file.filename}`,
     published,
     category: {
-      connect: { id: categoryId },
+      connect: { id: +categoryId },
     },
     tags: {
-      connect: tags.map((t) => ({ id: t })),
+      connect: tags.map((t) => ({ id: +t })),
     },
     user: {
       connect: { id: user.id },

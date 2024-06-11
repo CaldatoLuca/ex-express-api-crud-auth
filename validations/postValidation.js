@@ -13,13 +13,6 @@ const bodyValidations = {
       errorMessage: "Title must be a string",
       bail: true,
     },
-    custom: {
-      options: (value) => {
-        const regex = /^[a-zA-Z\s]+$/;
-        return regex.test(value);
-      },
-      errorMessage: "Title must not contain numbers or special characters",
-    },
   },
   content: {
     in: ["body"],
