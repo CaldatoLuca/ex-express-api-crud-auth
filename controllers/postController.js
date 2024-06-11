@@ -2,9 +2,13 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const CustomError = require("../exceptions/customError");
 const uniqueSlug = require("../utils/uniqueSlug");
+const deletePostImage = require("../utils/deletePostImage");
 
 const store = async (req, res, next) => {
-  const { title, content, image, published, categoryId, tags } = req.body;
+  let { title, content, published, categoryId, tags } = req.body;
+
+  if (published === "true") published = true;
+  if (published === "false") published = false;
 
   const user = req.user;
 
@@ -14,13 +18,13 @@ const store = async (req, res, next) => {
     title,
     slug,
     content,
-    image,
+    image: req.file.filename,
     published,
     category: {
-      connect: { id: categoryId },
+      connect: { id: +categoryId },
     },
     tags: {
-      connect: tags.map((t) => ({ id: t })),
+      connect: tags.map((t) => ({ id: +t })),
     },
     user: {
       connect: { id: user.id },
@@ -35,6 +39,7 @@ const store = async (req, res, next) => {
       post,
     });
   } catch (e) {
+    deletePostImage(req.file.filename);
     return next(new CustomError(e.message, 500));
   }
 };
@@ -118,17 +123,22 @@ const index = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   const { slug } = req.params;
-  const { title, content, image, published, categoryId, tags } = req.body;
+  const { title, content, published, categoryId, tags } = req.body;
 
   const user = req.user;
 
   const newSlug = await uniqueSlug(title);
 
+  const post = await prisma.post.findUnique({
+    where: { slug: slug },
+  });
+  deletePostImage(post.image);
+
   const data = {
     title,
     slug: newSlug,
     content,
-    image,
+    image: req.file.filename,
     published,
     category: {
       connect: { id: categoryId },
@@ -160,9 +170,14 @@ const destroy = async (req, res, next) => {
   const { slug } = req.params;
 
   try {
+    const post = await prisma.post.findUnique({
+      where: { slug: slug },
+    });
     await prisma.post.delete({
       where: { slug: slug },
     });
+
+    deletePostImage(post.image);
 
     res.status(200).json({
       message: "Post deleted successfully",

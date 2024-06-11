@@ -33,7 +33,7 @@ const bodyValidations = {
     },
   },
   image: {
-    in: ["body"],
+    in: ["file"],
     notEmpty: {
       errorMessage: "Image must not be empty",
       bail: true,
@@ -88,17 +88,19 @@ const bodyValidations = {
     },
     custom: {
       options: async (ids) => {
-        if (ids.length === 0) {
+        const intIds = ids.map((i) => +i);
+
+        if (intIds.length === 0) {
           throw new ValidationError(`Post must have at least a tag`, 400);
         }
-        const notIntegerId = ids.find((id) => isNaN(parseInt(id)));
+        const notIntegerId = intIds.find((id) => isNaN(parseInt(id)));
         if (notIntegerId) {
           throw new ValidationError(`All ids must be integer`, 400);
         }
         const tags = await prisma.tag.findMany({
-          where: { id: { in: ids } },
+          where: { id: { in: intIds } },
         });
-        if (tags.length !== ids.length) {
+        if (tags.length !== intIds.length) {
           throw new ValidationError(`Some tags were not found`, 404);
         }
         return true;
@@ -106,7 +108,6 @@ const bodyValidations = {
     },
   },
 };
-
 module.exports = {
   bodyValidations,
 };
