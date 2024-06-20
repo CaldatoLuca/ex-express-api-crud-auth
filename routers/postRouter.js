@@ -15,16 +15,20 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    console.log(uniqueSuffix);
     const extension = path.extname(file.originalname);
-    cb(null, file.fieldname + "-" + uniqueSuffix + extension); // Nome file con estensione
+    console.log(extension);
+
+    cb(null, "image-" + uniqueSuffix + extension); // Updated filename format
   },
 });
 
 const upload = multer({ storage: storage });
 
+//authenticateJWT
 router.post(
   "/",
-  [upload.single("image"), validator(bodyValidations), authenticateJWT],
+  [upload.single("image"), validator(bodyValidations)],
   postController.store
 );
 router.get("/", postController.index);
@@ -33,13 +37,15 @@ router.use("/:slug", validator(slugValidation));
 
 router.get("/:slug", postController.show);
 
-router.use(authenticateJWT);
+// router.use(authenticateJWT);
 
 router.put(
   "/:slug",
   [upload.single("image"), validator(bodyValidations), postOwnership],
   postController.update
 );
-router.delete("/:slug", postOwnership, postController.destroy);
+
+//postOwnership
+router.delete("/:slug", postController.destroy);
 
 module.exports = router;

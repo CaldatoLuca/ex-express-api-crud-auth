@@ -18,7 +18,7 @@ const store = async (req, res, next) => {
     title,
     slug,
     content,
-    image: `http://localhost:3000/img/posts/${req.file.filename}`,
+    image: `${req.file.filename}`,
     published,
     category: {
       connect: { id: +categoryId },
@@ -26,9 +26,9 @@ const store = async (req, res, next) => {
     tags: {
       connect: tags.map((t) => ({ id: +t })),
     },
-    user: {
-      connect: { id: user.id },
-    },
+    // user: {
+    //   connect: { id: user.id },
+    // },
   };
 
   try {
@@ -179,6 +179,7 @@ const destroy = async (req, res, next) => {
     await prisma.post.delete({
       where: { slug: slug },
     });
+    console.log(post.image);
 
     deletePostImage(post.image);
 
