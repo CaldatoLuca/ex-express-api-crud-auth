@@ -13,6 +13,7 @@ const bodyValidations = {
       errorMessage: "Title must be a string",
       bail: true,
     },
+    trim: true,
   },
   content: {
     in: ["body"],
@@ -24,6 +25,7 @@ const bodyValidations = {
       errorMessage: "Content must be a string",
       bail: true,
     },
+    trim: true,
   },
   image: {
     in: ["file"],
@@ -46,6 +48,7 @@ const bodyValidations = {
       errorMessage: "Image must be a boolean",
       bail: true,
     },
+    toBoolean: true,
   },
   categoryId: {
     in: ["body"],
@@ -68,6 +71,7 @@ const bodyValidations = {
         return true;
       },
     },
+    toInt: true,
   },
   tags: {
     in: ["body"],
@@ -97,6 +101,11 @@ const bodyValidations = {
           throw new ValidationError(`Some tags were not found`, 404);
         }
         return true;
+      },
+    },
+    customSanitizer: {
+      options: (ids) => {
+        return ids.map((id) => +id);
       },
     },
   },
