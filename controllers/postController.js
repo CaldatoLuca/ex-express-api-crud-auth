@@ -106,6 +106,9 @@ const index = async (req, res, next) => {
         tags: { select: { name: true } },
         user: { select: { name: true } },
       },
+      orderBy: {
+        createdAt: "desc",
+      },
       take: parseInt(limit),
       skip: parseInt(offset),
     });
@@ -191,10 +194,41 @@ const destroy = async (req, res, next) => {
   }
 };
 
+const indexByTag = async (req, res, next) => {
+  const { tag } = req.params;
+
+  try {
+    const posts = await prisma.post.findMany({
+      where: {
+        tags: {
+          some: {
+            name: tag,
+          },
+        },
+      },
+      include: {
+        category: { select: { name: true } },
+        tags: { select: { name: true } },
+        user: { select: { name: true } },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    res.status(200).json({
+      message: `${posts.length} Posts found`,
+      posts,
+    });
+  } catch (err) {
+    return next(new CustomError(err.message, 500));
+  }
+};
+
 module.exports = {
   store,
   show,
   index,
   update,
   destroy,
+  indexByTag,
 };

@@ -33,6 +33,8 @@ router.post(
 );
 router.get("/", postController.index);
 
+router.get("/tag/:tag", postController.indexByTag);
+
 router.use("/:slug", validator(slugValidation));
 
 router.get("/:slug", postController.show);
