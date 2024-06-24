@@ -49,6 +49,17 @@ const register = {
       bail: true,
     },
   },
+  image: {
+    in: ["file"],
+    notEmpty: {
+      errorMessage: "Image must not be empty",
+      bail: true,
+    },
+    isString: {
+      errorMessage: "Image must be a string",
+      bail: true,
+    },
+  },
   name: {
     in: ["body"],
     isString: {
