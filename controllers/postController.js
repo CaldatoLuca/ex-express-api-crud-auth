@@ -26,9 +26,9 @@ const store = async (req, res, next) => {
     tags: {
       connect: tags.map((t) => ({ id: +t })),
     },
-    // user: {
-    //   connect: { id: user.id },
-    // },
+    user: {
+      connect: { id: user.id },
+    },
   };
 
   try {
@@ -104,7 +104,7 @@ const index = async (req, res, next) => {
       include: {
         category: { select: { name: true } },
         tags: { select: { name: true } },
-        user: { select: { name: true } },
+        user: { select: { name: true, image: true } },
       },
       orderBy: {
         createdAt: "desc",
