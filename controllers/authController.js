@@ -10,6 +10,7 @@ const register = async (req, res, next) => {
   const data = {
     email,
     password: await hashPassword(password),
+    image: `${req.file.filename}`,
     name,
   };
 
