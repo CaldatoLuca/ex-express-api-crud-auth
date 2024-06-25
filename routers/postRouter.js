@@ -24,11 +24,9 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-//authenticateJWT
 router.post(
   "/",
-  [upload.single("image"), validator(bodyValidations)],
+  [upload.single("image"), authenticateJWT, validator(bodyValidations)],
   postController.store
 );
 router.get("/", postController.index);
@@ -39,7 +37,7 @@ router.use("/:slug", validator(slugValidation));
 
 router.get("/:slug", postController.show);
 
-// router.use(authenticateJWT);
+router.use(authenticateJWT);
 
 router.put(
   "/:slug",
@@ -47,7 +45,6 @@ router.put(
   postController.update
 );
 
-//postOwnership
-router.delete("/:slug", postController.destroy);
+router.delete("/:slug", postOwnership, postController.destroy);
 
 module.exports = router;
