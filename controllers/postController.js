@@ -52,7 +52,7 @@ const show = async (req, res, next) => {
       where: { slug: slug },
       include: {
         category: { select: { name: true } },
-        tags: { select: { name: true } },
+        tags: { select: { name: true, id: true } },
         user: { select: { name: true } },
       },
     });
@@ -144,7 +144,7 @@ const update = async (req, res, next) => {
     title,
     slug: newSlug,
     content,
-    image: `http://localhost:3000/img/posts/${req.file.filename}`,
+    image: `${req.file.filename}`,
     published,
     category: {
       connect: { id: +categoryId },
